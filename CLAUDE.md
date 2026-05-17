@@ -109,3 +109,4 @@ Join principale: `t_articoli.numero_articolo` ↔ `t_emendamenti.articolo_target
 - L'encoding UTF-8 dei file XML del Senato può contenere artefatti di doppia codifica; `flatten_custom.py:fix_encoding()` li normalizza.
 - Il namespace Akoma Ntoso usato è `http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD03` (prefisso `an`).
 - `senato_pilot.py` usa `gh` CLI se disponibile, altrimenti cade su `urllib` diretto.
+- Per esplorare/debuggare file JSON da shell usare `jq`, non `python3 -c`.

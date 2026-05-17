@@ -8,9 +8,6 @@ ref/
 # Ambiente Python
 .venv/
 
-# Binari e tool Windows
-tools/
-
 # Claude Code
 .claude/
 

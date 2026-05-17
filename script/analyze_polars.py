@@ -14,19 +14,19 @@ def analyze_complexity(db_path):
         numero_articolo, 
         versione,
         LENGTH(testo_integrale) as char_count,
-        ARRAY_LENGTH(STR_SPLIT_REGEX(testo_integrale, '\s+')) as word_count
+        ARRAY_LENGTH(STR_SPLIT_REGEX(testo_integrale, '\\s+')) as word_count
     FROM t_articoli
     """
     
     # DuckDB arrow() export is very fast for Polars
     # Normalize numero_articolo: remove "Art.", spaces and final dots
     df_articoli = (
-        pl.from_arrow(con.execute(query).arrow())
+        con.execute(query).pl()
         .with_columns(
             pl.col("numero_articolo")
             .str.replace("Art.", "")
-            .str.replace_all("\s+", "")
-            .str.replace("\.$", "")
+            .str.replace_all(r"\s+", "")
+            .str.replace(r"\.$", "")
             .alias("num_clean")
         )
     )
@@ -60,7 +60,7 @@ def analyze_complexity(db_path):
     FROM t_emendamenti
     GROUP BY articolo_target
     """
-    df_emend = pl.from_arrow(con.execute(query_emend).arrow())
+    df_emend = con.execute(query_emend).pl()
 
     df_final = df_comparison.join(df_emend, on="num_clean", how="left")
     
