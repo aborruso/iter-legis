@@ -1,0 +1,20 @@
+# Dati locali (rigenerabili via pipeline)
+data/
+
+# Documenti privati
+scambi_email/
+ref/
+
+# Ambiente Python
+.venv/
+
+# Binari e tool Windows
+tools/
+
+# Claude Code
+.claude/
+
+# Temporanei
+tmp/
+*.pyc
+__pycache__/
