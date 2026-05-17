@@ -11,6 +11,7 @@ erDiagram
     T_ATTI ||--o{ T_ARTICOLI : "contiene"
     T_ATTI ||--o{ T_EMENDAMENTI : "riceve"
     T_ARTICOLI ||--o{ T_EMENDAMENTI : "e' bersaglio di"
+    T_EMENDAMENTI ||--o{ T_PROPONENTI : "ha"
 
     T_ATTI {
         string atto_id PK "ID Univoco Atto (es. Atto00055193)"
@@ -33,6 +34,10 @@ erDiagram
         string articolo_target FK "Numero articolo bersaglio (join con T_ARTICOLI.numero_articolo)"
         date data "Data di presentazione"
         string testo_emendamento "Testo della modifica proposta"
+    }
+
+    T_PROPONENTI {
+        string emendamento_id FK "Riferimento all'Emendamento"
         string proponente_id "ID Senatore (Open Data)"
         string proponente_nome "Nome completo"
         string proponente_gruppo "Gruppo politico alla data dell'emendamento"
@@ -42,21 +47,39 @@ erDiagram
 
 ## 2. Come eseguire i Join
 
-### Join Articoli -> Emendamenti
-Per analizzare quali emendamenti hanno colpito un articolo specifico, usa:
-*   `T_ARTICOLI.numero_articolo` <-> `T_EMENDAMENTI.articolo_target`
-*   Assicurati di filtrare la `versione` in `T_ARTICOLI` (es. usa `ddlpres` come base).
+### Join Articoli → Emendamenti
+Per analizzare quali emendamenti hanno colpito un articolo specifico:
+- `T_ARTICOLI.numero_articolo` ↔ `T_EMENDAMENTI.articolo_target`
+- Filtrare `versione = 'ddlpres'` in `T_ARTICOLI` per usare il testo di partenza come base.
 
-### Join Emendamenti -> Anagrafica
-La tabella `t_emendamenti` è già "denormalizzata" per proponente. Se un emendamento ha 5 firmatari, troverai 5 righe con lo stesso `emendamento_id` ma diversi `proponente_id`.
+### Join Emendamenti → Proponenti
+`T_EMENDAMENTI.emendamento_id` ↔ `T_PROPONENTI.emendamento_id`
+
+Un emendamento con N firmatari ha N righe in `T_PROPONENTI`, tutte con lo stesso `emendamento_id`.
+
+### Esempio (SQL / DuckDB)
+```sql
+-- Quanti emendamenti per gruppo politico, per articolo?
+SELECT e.articolo_target, p.proponente_gruppo, COUNT(DISTINCT e.emendamento_id) AS n
+FROM t_emendamenti e
+JOIN t_proponenti p ON e.emendamento_id = p.emendamento_id
+GROUP BY e.articolo_target, p.proponente_gruppo
+ORDER BY e.articolo_target, n DESC;
+```
 
 ## 3. Processo di Trasformazione (Audit Log)
 
-1.  **Parsing XML:** Estrazione gerarchica da standard Akoma Ntoso (Senato).
-2.  **Mapping Politico:** Incrocio con Open Data Senato (RDF) per recuperare l'appartenenza ai gruppi parlamentari storicizzata.
-3.  **Encoding Fix:** Rimozione di artefatti UTF-8 (es. `Ã ` -> `à`) e normalizzazione spazi.
-4.  **Flattening:** Trasformazione da JSON nidificato a CSV relazionale tramite script `flatten_custom.py`.
+1. **Parsing XML:** Estrazione gerarchica da standard Akoma Ntoso (Senato).
+2. **Mapping Politico:** Incrocio con Open Data Senato (RDF) per recuperare l'appartenenza ai gruppi parlamentari storicizzata.
+3. **Encoding Fix:** Rimozione di artefatti UTF-8 (es. `Ã ` → `à`) e normalizzazione spazi.
+4. **Flattening:** Trasformazione da JSON nidificato a CSV relazionale tramite `flatten_custom.py`.
 
 ## 4. Posizione dei file
-I dati per l'atto campione si trovano in:
-`data/Leg19/[ATTO_ID]/flattened_custom/`
+
+```
+data/Leg19/{ATTO_ID}/flattened_custom/
+    t_atti.csv
+    t_articoli.csv
+    t_emendamenti.csv
+    t_proponenti.csv
+```

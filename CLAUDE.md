@@ -88,10 +88,11 @@ Il file `schema.json` descrive la struttura del JSON consolidato intermedio. Le 
 
 - **t_atti** — un record per atto legislativo
 - **t_articoli** — un record per articolo × versione DDL (`ddlpres`, `ddlcomm`, `ddlmess`)
-- **t_emendamenti** — denormalizzata per proponente (un emendamento con N firmatari → N righe)
+- **t_emendamenti** — un record per emendamento unico
+- **t_proponenti** — un record per emendamento × firmatario (join: `emendamento_id`)
 - **t_senatori** — denormalizzata per appartenenza a gruppo parlamentare (una riga per periodo)
 
-Join principale: `t_articoli.numero_articolo` ↔ `t_emendamenti.articolo_target` (filtare su `versione = 'ddlpres'`).
+Join principale: `t_articoli.numero_articolo` ↔ `t_emendamenti.articolo_target` (filtrare su `versione = 'ddlpres'`).
 
 ## Fasi del PRD
 

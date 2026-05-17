@@ -10,7 +10,8 @@ Il database `data/iter_legis.duckdb` è popolato con 2 atti campione della XIX L
 |---------|-------|------|
 | `t_atti` | 2 | Atto00055193, Atto00055210 |
 | `t_articoli` | 26 | Versioni ddlpres/ddlcomm/ddlmess |
-| `t_emendamenti` | 2.342 | Denormalizzata per proponente |
+| `t_emendamenti` | 914 | Un record per emendamento unico |
+| `t_proponenti` | 2.342 | Un record per emendamento × firmatario |
 | `t_senatori` | 299 | Con storico gruppi parlamentari |
 
 ### Pipeline completamente funzionante

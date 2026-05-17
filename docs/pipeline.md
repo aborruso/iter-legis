@@ -114,7 +114,8 @@ uv run script/flatten_custom.py \
 |------|-----------|
 | `t_atti.csv` | Un record per atto |
 | `t_articoli.csv` | Un record per articolo × versione DDL |
-| `t_emendamenti.csv` | Un record per emendamento × proponente (denormalizzata) |
+| `t_emendamenti.csv` | Un record per emendamento unico |
+| `t_proponenti.csv` | Un record per emendamento × firmatario |
 
 Per lo schema dettagliato dei campi vedi [`README_DATASET.md`](../README_DATASET.md).
 
@@ -181,5 +182,6 @@ data/
         t_atti.csv              ← flatten_custom.py
         t_articoli.csv
         t_emendamenti.csv
+        t_proponenti.csv
   iter_legis.duckdb     ← init_duckdb.py
 ```
