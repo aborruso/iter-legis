@@ -63,13 +63,20 @@ def flatten_atto(json_path, output_dir):
                     'testo_integrale': fix_encoding(full_text)
                 })
 
-    # 3. Table: EMENDAMENTI
+    # 3. Table: EMENDAMENTI (one row per amendment)
     emend_headers = [
-        'atto_id', 'emendamento_id', 'numero_emendamento', 'articolo_target', 'data', 'target_info', 'testo_emendamento',
-        'proponente_id', 'proponente_nome', 'proponente_gruppo', 'proponente_genere'
+        'atto_id', 'emendamento_id', 'numero_emendamento', 'articolo_target',
+        'data', 'target_info', 'testo_emendamento'
+    ]
+    # 4. Table: PROPONENTI (one row per amendment × proponent)
+    prop_headers = [
+        'emendamento_id', 'proponente_id', 'proponente_nome',
+        'proponente_gruppo', 'proponente_genere'
     ]
     emend_rows = []
-    
+    prop_rows = []
+    seen_emend = set()
+
     for em in data.get('amendments', []):
         metadata = em.get('metadata', {})
         em_id = metadata.get('id')
@@ -77,42 +84,34 @@ def flatten_atto(json_path, output_dir):
         em_date = metadata.get('date')
         target = em.get('target_info')
         art_target = extract_article_num(em_num if em_num else target)
-        
         em_text = "\n".join(em.get('content', []))
-        
-        proponents = em.get('enriched_proponents', [])
-        base_row = {
-            'atto_id': atto_id, 
-            'emendamento_id': em_id, 
-            'numero_emendamento': em_num, 
-            'articolo_target': art_target,
-            'data': em_date, 
-            'target_info': target, 
-            'testo_emendamento': fix_encoding(em_text)
-        }
 
-        if not proponents:
-            row = base_row.copy()
-            row.update({
-                'proponente_id': None, 'proponente_nome': None, 
-                'proponente_gruppo': None, 'proponente_genere': None
+        if em_id not in seen_emend:
+            emend_rows.append({
+                'atto_id': atto_id,
+                'emendamento_id': em_id,
+                'numero_emendamento': em_num,
+                'articolo_target': art_target,
+                'data': em_date,
+                'target_info': target,
+                'testo_emendamento': fix_encoding(em_text)
             })
-            emend_rows.append(row)
-        else:
-            for p in proponents:
-                row = base_row.copy()
-                row.update({
-                    'proponente_id': p.get('id'),
-                    'proponente_nome': p.get('name'),
-                    'proponente_gruppo': p.get('group'),
-                    'proponente_genere': p.get('gender')
-                })
-                emend_rows.append(row)
+            seen_emend.add(em_id)
+
+        for p in em.get('enriched_proponents', []):
+            prop_rows.append({
+                'emendamento_id': em_id,
+                'proponente_id': p.get('id'),
+                'proponente_nome': p.get('name'),
+                'proponente_gruppo': p.get('group'),
+                'proponente_genere': p.get('gender')
+            })
 
     # Write CSVs
     write_csv(output_dir / "t_atti.csv", atti_headers, [atti_row])
     write_csv(output_dir / "t_articoli.csv", articoli_headers, articoli_rows)
     write_csv(output_dir / "t_emendamenti.csv", emend_headers, emend_rows)
+    write_csv(output_dir / "t_proponenti.csv", prop_headers, prop_rows)
     
     print(f"Done! Files generated in {output_dir}")
 

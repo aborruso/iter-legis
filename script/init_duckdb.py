@@ -31,6 +31,11 @@ def setup_database(db_path):
             data DATE,
             target_info VARCHAR,
             testo_emendamento VARCHAR,
+            PRIMARY KEY (emendamento_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS t_proponenti (
+            emendamento_id VARCHAR,
             proponente_id VARCHAR,
             proponente_nome VARCHAR,
             proponente_gruppo VARCHAR,
@@ -67,16 +72,20 @@ def import_atto_csvs(con, flattened_dir):
     # Import Articoli
     con.execute(f"INSERT OR IGNORE INTO t_articoli SELECT * FROM read_csv_auto('{flattened_dir}/t_articoli.csv')")
     
-    # Import Emendamenti
-    # Note: t_emendamenti has no PK in schema, using INSERT OR IGNORE won't work for duplicates unless we add a constraint.
-    # For now, we manually check if atto_id already exists to keep it simple and idempotent.
+    # Import Emendamenti (idempotent via PRIMARY KEY)
+    con.execute(f"INSERT OR IGNORE INTO t_emendamenti SELECT * FROM read_csv_auto('{flattened_dir}/t_emendamenti.csv')")
+
+    # Import Proponenti (idempotent: skip if emendamento_id already present)
     atto_id = con.execute(f"SELECT atto_id FROM read_csv_auto('{flattened_dir}/t_atti.csv') LIMIT 1").fetchone()[0]
-    exists = con.execute(f"SELECT count(*) FROM t_emendamenti WHERE atto_id = '{atto_id}'").fetchone()[0]
-    
-    if exists == 0:
-        con.execute(f"INSERT INTO t_emendamenti SELECT * FROM read_csv_auto('{flattened_dir}/t_emendamenti.csv')")
-    else:
-        print(f"Amendments for {atto_id} already in database. Skipping.")
+    em_ids = con.execute(f"SELECT DISTINCT emendamento_id FROM t_emendamenti WHERE atto_id = '{atto_id}'").fetchall()
+    if em_ids:
+        exists = con.execute(
+            f"SELECT count(*) FROM t_proponenti WHERE emendamento_id = '{em_ids[0][0]}'"
+        ).fetchone()[0]
+        if exists == 0:
+            con.execute(f"INSERT INTO t_proponenti SELECT * FROM read_csv_auto('{flattened_dir}/t_proponenti.csv')")
+        else:
+            print(f"Proponents for {atto_id} already in database. Skipping.")
     
     print(f"Import of {atto_id} complete.")
 

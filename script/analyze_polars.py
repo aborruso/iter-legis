@@ -53,12 +53,13 @@ def analyze_complexity(db_path):
 
     # 3. Join with Amendments fragmentation
     query_emend = """
-    SELECT 
-        articolo_target as num_clean,
-        COUNT(DISTINCT emendamento_id) as num_emendamenti,
-        COUNT(DISTINCT proponente_gruppo) as num_gruppi_coinvolti
-    FROM t_emendamenti
-    GROUP BY articolo_target
+    SELECT
+        e.articolo_target as num_clean,
+        COUNT(DISTINCT e.emendamento_id) as num_emendamenti,
+        COUNT(DISTINCT p.proponente_gruppo) as num_gruppi_coinvolti
+    FROM t_emendamenti e
+    LEFT JOIN t_proponenti p ON e.emendamento_id = p.emendamento_id
+    GROUP BY e.articolo_target
     """
     df_emend = con.execute(query_emend).pl()
 
