@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD): Sperti Legislative Analytics
+# Product Requirements Document (PRD)
 
 ## 1. Obiettivo del Progetto
 Costruire un dataset strutturato dei processi legislativi del Senato Italiano (standard Akoma Ntoso) per analizzare la relazione tra frammentazione politica e complessità legislativa.

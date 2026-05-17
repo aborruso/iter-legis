@@ -81,7 +81,7 @@ def import_atto_csvs(con, flattened_dir):
     print(f"Import of {atto_id} complete.")
 
 if __name__ == "__main__":
-    db_file = Path("data/sperti_legislative.duckdb")
+    db_file = Path("data/iter_legis.duckdb")
     anagrafica_csv = Path("data/Leg19/Anagrafica/senatori_19_flattened.csv")
     
     con = setup_database(db_file)

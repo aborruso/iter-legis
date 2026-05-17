@@ -4,7 +4,7 @@ Ultimo aggiornamento: 2026-05-17
 
 ## Cosa funziona oggi
 
-Il database `data/sperti_legislative.duckdb` è popolato con 2 atti campione della XIX Legislatura e contiene:
+Il database `data/iter_legis.duckdb` è popolato con 2 atti campione della XIX Legislatura e contiene:
 
 | Tabella | Righe | Note |
 |---------|-------|------|

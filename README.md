@@ -1,4 +1,4 @@
-# Sperti Legislative Analytics
+# iter-legis
 
 Pipeline ETL per analizzare la relazione tra frammentazione politica e complessità legislativa nei processi del Senato Italiano (standard Akoma Ntoso).
 
@@ -12,7 +12,7 @@ Pipeline ETL per analizzare la relazione tra frammentazione politica e complessi
 
 ```bash
 git clone <url-repo>
-cd sperti
+cd iter-legis
 uv sync
 ```
 
@@ -55,13 +55,13 @@ uv run script/flatten_custom.py \
 
 ```bash
 uv run script/init_duckdb.py
-# Output: data/sperti_legislative.duckdb
+# Output: data/iter_legis.duckdb
 ```
 
 ### Verifica rapida
 
 ```bash
-duckdb -c "SELECT count(*) FROM t_emendamenti" data/sperti_legislative.duckdb
+duckdb -c "SELECT count(*) FROM t_emendamenti" data/iter_legis.duckdb
 ```
 
 ## Struttura dei dati
@@ -79,7 +79,7 @@ data/Leg{N}/{AttoID}/
 data/Leg{N}/Anagrafica/
     └── senatori_19.json       # Anagrafica senatori (da Open Data Senato)
 
-data/sperti_legislative.duckdb # Database aggregato finale
+data/iter_legis.duckdb # Database aggregato finale
 ```
 
 Per la documentazione del dataset e le istruzioni sui join, vedi [`README_DATASET.md`](README_DATASET.md).

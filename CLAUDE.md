@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Progetto
 
-**Sperti Legislative Analytics** — pipeline ETL per costruire un dataset strutturato dei processi legislativi del Senato Italiano (standard Akoma Ntoso) al fine di analizzare la relazione tra frammentazione politica e complessità legislativa. Progetto di tesi accademica.
+**iter-legis** — pipeline ETL per costruire un dataset strutturato dei processi legislativi del Senato Italiano (standard Akoma Ntoso) al fine di analizzare la relazione tra frammentazione politica e complessità legislativa. Progetto di tesi accademica.
 
 La fonte dati principale è il repository GitHub pubblico [SenatoDellaRepubblica/AkomaNtosoBulkData](https://github.com/SenatoDellaRepubblica/AkomaNtosoBulkData).
 
@@ -39,10 +39,10 @@ uv run script/flatten_custom.py data/Leg19/Atto00055193/Atto00055193_consolidate
 
 # Caricamento DuckDB (aggrega tutti gli atti già appiattiti)
 uv run script/init_duckdb.py
-# Output: data/sperti_legislative.duckdb
+# Output: data/iter_legis.duckdb
 
 # Query DuckDB
-duckdb -c "SELECT count(*) FROM t_emendamenti" data/sperti_legislative.duckdb
+duckdb -c "SELECT count(*) FROM t_emendamenti" data/iter_legis.duckdb
 ```
 
 ## Architettura della pipeline
@@ -75,7 +75,7 @@ data/Leg{N}/Anagrafica/
         └── t_emendamenti.csv
                     │
                     ▼ init_duckdb.py
-    data/sperti_legislative.duckdb
+    data/iter_legis.duckdb
         ├── t_atti
         ├── t_articoli
         ├── t_emendamenti

@@ -70,7 +70,7 @@ def analyze_complexity(db_path):
     con.close()
 
 if __name__ == "__main__":
-    db_file = Path("data/sperti_legislative.duckdb")
+    db_file = Path("data/iter_legis.duckdb")
     if db_file.exists():
         analyze_complexity(db_file)
     else:

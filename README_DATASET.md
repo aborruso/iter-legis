@@ -1,4 +1,4 @@
-# Dataset Documentation: Sperti Legislative Analytics
+# Dataset Documentation
 
 Questo documento descrive la struttura del dataset tabellare generato per l'analisi della complessità legislativa e della frammentazione politica.
 

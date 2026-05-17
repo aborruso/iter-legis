@@ -70,7 +70,7 @@ def github_get(path: str, *, accept: str = "application/vnd.github+json") -> Any
         f"{API_ROOT}/{path}",
         headers={
             "Accept": accept,
-            "User-Agent": "sperti-senato-pilot",
+            "User-Agent": "iter-legis-senato-pilot",
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )

@@ -126,7 +126,7 @@ Aggrega tutti gli atti già appiattiti in un unico database.
 
 ```bash
 uv run script/init_duckdb.py
-# Output: data/sperti_legislative.duckdb
+# Output: data/iter_legis.duckdb
 ```
 
 Lo script scansiona ricorsivamente `data/` cercando cartelle `flattened_custom/` e carica tutti i CSV trovati, più l'anagrafica senatori.
@@ -138,7 +138,7 @@ duckdb -c "SELECT 'atti' as t, count(*) FROM t_atti
            UNION ALL SELECT 'articoli', count(*) FROM t_articoli
            UNION ALL SELECT 'emendamenti', count(*) FROM t_emendamenti
            UNION ALL SELECT 'senatori', count(*) FROM t_senatori;" \
-  data/sperti_legislative.duckdb
+  data/iter_legis.duckdb
 ```
 
 ---
@@ -149,7 +149,7 @@ Calcola metriche di complessità e correlazione frammentazione-complessità.
 
 ```bash
 uv run script/analyze_polars.py
-# Richiede: data/sperti_legislative.duckdb
+# Richiede: data/iter_legis.duckdb
 ```
 
 Produce tre output su stdout:
@@ -181,5 +181,5 @@ data/
         t_atti.csv              ← flatten_custom.py
         t_articoli.csv
         t_emendamenti.csv
-  sperti_legislative.duckdb     ← init_duckdb.py
+  iter_legis.duckdb     ← init_duckdb.py
 ```
