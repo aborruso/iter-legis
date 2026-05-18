@@ -13,6 +13,13 @@ def setup_database(db_path):
             legislatura VARCHAR
         );
 
+        CREATE TABLE IF NOT EXISTS t_firmatari_atto (
+            atto_id VARCHAR,
+            nome VARCHAR,
+            genere VARCHAR,
+            primo_firmatario BOOLEAN
+        );
+
         CREATE TABLE IF NOT EXISTS t_articoli (
             atto_id VARCHAR,
             articolo_id VARCHAR,
@@ -69,6 +76,12 @@ def import_atto_csvs(con, flattened_dir):
     # Import Atti
     con.execute(f"INSERT OR IGNORE INTO t_atti SELECT * FROM read_csv_auto('{flattened_dir}/t_atti.csv')")
     
+    # Import Firmatari Atto (idempotent via atto_id check)
+    atto_id = con.execute(f"SELECT atto_id FROM read_csv_auto('{flattened_dir}/t_atti.csv') LIMIT 1").fetchone()[0]
+    firmatari_exists = con.execute(f"SELECT count(*) FROM t_firmatari_atto WHERE atto_id = '{atto_id}'").fetchone()[0]
+    if firmatari_exists == 0:
+        con.execute(f"INSERT INTO t_firmatari_atto SELECT * FROM read_csv_auto('{flattened_dir}/t_firmatari_atto.csv')")
+
     # Import Articoli
     con.execute(f"INSERT OR IGNORE INTO t_articoli SELECT * FROM read_csv_auto('{flattened_dir}/t_articoli.csv')")
     
@@ -76,7 +89,6 @@ def import_atto_csvs(con, flattened_dir):
     con.execute(f"INSERT OR IGNORE INTO t_emendamenti SELECT * FROM read_csv_auto('{flattened_dir}/t_emendamenti.csv')")
 
     # Import Proponenti (idempotent: skip if emendamento_id already present)
-    atto_id = con.execute(f"SELECT atto_id FROM read_csv_auto('{flattened_dir}/t_atti.csv') LIMIT 1").fetchone()[0]
     em_ids = con.execute(f"SELECT DISTINCT emendamento_id FROM t_emendamenti WHERE atto_id = '{atto_id}'").fetchall()
     if em_ids:
         exists = con.execute(

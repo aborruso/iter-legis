@@ -79,10 +79,22 @@ def consolidate_atto(leg, atto_id):
             amend['enriched_proponents'] = proponents
             enriched_amendments.append(amend)
 
-    # 3. Final Consolidation
+    # 3. Extract DDL signatories from ddlpres
+    firmatari_atto = []
+    ddlpres = ddl_versions.get('ddlpres')
+    if ddlpres:
+        for prop in ddlpres.get('metadata', {}).get('proponents', []):
+            firmatari_atto.append({
+                "nome": prop.get('name'),
+                "genere": prop.get('genere'),
+                "primo_firmatario": prop.get('primo_firmatario', False)
+            })
+
+    # 4. Final Consolidation
     output = {
         "leg": leg,
         "atto_id": atto_id,
+        "firmatari_atto": firmatari_atto,
         "ddl_versions": ddl_versions,
         "amendments": enriched_amendments
     }

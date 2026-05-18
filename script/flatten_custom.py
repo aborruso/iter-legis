@@ -44,7 +44,19 @@ def flatten_atto(json_path, output_dir):
     atti_headers = ['atto_id', 'legislatura']
     atti_row = {'atto_id': atto_id, 'legislatura': leg}
     
-    # 2. Table: ARTICOLI
+    # 2. Table: FIRMATARI ATTO
+    firmatari_headers = ['atto_id', 'nome', 'genere', 'primo_firmatario']
+    firmatari_rows = [
+        {
+            'atto_id': atto_id,
+            'nome': f.get('nome'),
+            'genere': f.get('genere'),
+            'primo_firmatario': f.get('primo_firmatario')
+        }
+        for f in data.get('firmatari_atto', [])
+    ]
+
+    # 3. Table: ARTICOLI
     articoli_headers = ['atto_id', 'articolo_id', 'numero_articolo', 'titolo', 'versione', 'testo_integrale']
     articoli_rows = []
     
@@ -63,12 +75,12 @@ def flatten_atto(json_path, output_dir):
                     'testo_integrale': fix_encoding(full_text)
                 })
 
-    # 3. Table: EMENDAMENTI (one row per amendment)
+    # 4. Table: EMENDAMENTI (one row per amendment)
     emend_headers = [
         'atto_id', 'emendamento_id', 'numero_emendamento', 'articolo_target',
         'data', 'target_info', 'testo_emendamento'
     ]
-    # 4. Table: PROPONENTI (one row per amendment × proponent)
+    # 5. Table: PROPONENTI (one row per amendment × proponent)
     prop_headers = [
         'emendamento_id', 'proponente_id', 'proponente_nome',
         'proponente_gruppo', 'proponente_genere'
@@ -109,6 +121,7 @@ def flatten_atto(json_path, output_dir):
 
     # Write CSVs
     write_csv(output_dir / "t_atti.csv", atti_headers, [atti_row])
+    write_csv(output_dir / "t_firmatari_atto.csv", firmatari_headers, firmatari_rows)
     write_csv(output_dir / "t_articoli.csv", articoli_headers, articoli_rows)
     write_csv(output_dir / "t_emendamenti.csv", emend_headers, emend_rows)
     write_csv(output_dir / "t_proponenti.csv", prop_headers, prop_rows)

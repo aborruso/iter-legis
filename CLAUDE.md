@@ -87,6 +87,7 @@ data/Leg{N}/Anagrafica/
 Il file `schema.json` descrive la struttura del JSON consolidato intermedio. Le tabelle relazionali finali (`README_DATASET.md`) sono:
 
 - **t_atti** — un record per atto legislativo
+- **t_firmatari_atto** — un record per atto × firmatario del DDL (primo firmatario + cofirmatari; join: `atto_id`)
 - **t_articoli** — un record per articolo × versione DDL (`ddlpres`, `ddlcomm`, `ddlmess`)
 - **t_emendamenti** — un record per emendamento unico
 - **t_proponenti** — un record per emendamento × firmatario (join: `emendamento_id`)

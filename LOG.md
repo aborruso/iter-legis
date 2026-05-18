@@ -1,5 +1,11 @@
 # LOG — iter-legis
 
+## 2026-05-18
+
+- Aggiunta tabella `t_firmatari_atto`: firmatari del DDL (primo firmatario + cofirmatari) con genere, collegata a `T_ATTI` (chiude issue #1)
+- Fix `parser_ddl.py`: ricerca `docProponent` estesa a tutto il documento (non solo `coverPage`) — secondo atto aveva proponents nel `preface`
+- Aggiornata documentazione: `README_DATASET.md`, `docs/pipeline.md`, `CLAUDE.md`, `docs/stato-avanzamento.md`
+
 ## 2026-05-17
 
 ### Setup e infrastruttura

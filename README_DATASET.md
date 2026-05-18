@@ -10,12 +10,20 @@ Le tabelle CSV sono progettate per essere **relazionali** e facilmente joinabili
 erDiagram
     T_ATTI ||--o{ T_ARTICOLI : "contiene"
     T_ATTI ||--o{ T_EMENDAMENTI : "riceve"
+    T_ATTI ||--o{ T_FIRMATARI_ATTO : "presentato da"
     T_ARTICOLI ||--o{ T_EMENDAMENTI : "e' bersaglio di"
     T_EMENDAMENTI ||--o{ T_PROPONENTI : "ha"
 
     T_ATTI {
         string atto_id PK "ID Univoco Atto (es. Atto00055193)"
         string legislatura "Numero Legislatura"
+    }
+
+    T_FIRMATARI_ATTO {
+        string atto_id FK "Riferimento all'Atto"
+        string nome "Nome del firmatario"
+        string genere "Genere (M/F)"
+        boolean primo_firmatario "True se primo firmatario"
     }
 
     T_ARTICOLI {
@@ -46,6 +54,11 @@ erDiagram
 ```
 
 ## 2. Come eseguire i Join
+
+### Join Atto → Firmatari
+`T_ATTI.atto_id` ↔ `T_FIRMATARI_ATTO.atto_id`
+
+Un atto con N firmatari ha N righe in `T_FIRMATARI_ATTO`. Il campo `primo_firmatario = true` identifica il primo firmatario; le righe restanti sono cofirmatari.
 
 ### Join Articoli → Emendamenti
 Per analizzare quali emendamenti hanno colpito un articolo specifico:
@@ -79,6 +92,7 @@ ORDER BY e.articolo_target, n DESC;
 ```
 data/Leg19/{ATTO_ID}/flattened_custom/
     t_atti.csv
+    t_firmatari_atto.csv
     t_articoli.csv
     t_emendamenti.csv
     t_proponenti.csv

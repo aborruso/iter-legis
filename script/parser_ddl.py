@@ -23,16 +23,30 @@ def parse_ddl(xml_path):
         metadata['number'] = work.find('an:FRBRnumber', ns).attrib.get('value')
         metadata['type'] = work.find('an:FRBRsubtype', ns).attrib.get('value')
 
+    # Build lookup maps from references section
+    persons_map = {}
+    for p in root.findall('.//an:TLCPerson', ns):
+        persons_map[p.attrib.get('id', '')] = p.attrib.get('showAs', '')
+
+    roles_map = {}
+    for r in root.findall('.//an:TLCRole', ns):
+        roles_map[r.attrib.get('id', '')] = r.attrib.get('showAs', '')
+
     # Proponents (Senators)
     proponents = []
-    # Find docProponent in coverPage
-    for prop in root.findall('.//an:coverPage//an:docProponent', ns):
+    for i, prop in enumerate(root.findall('.//an:docProponent', ns)):
         person_id = prop.attrib.get('refersTo', '').lstrip('#')
-        name = prop.text.strip() if prop.text else ""
-        # Try to find the person details in references if needed, 
-        # but for now, we take what's in docProponent
-        proponents.append({"id": person_id, "name": name})
-    
+        role_id = prop.attrib.get('as', '').lstrip('#')
+        role_label = roles_map.get(role_id, '')
+        genere = 'F' if 'Senatrice' in role_label else 'M'
+        name = persons_map.get(person_id) or (prop.text.strip() if prop.text else '')
+        proponents.append({
+            "id": person_id,
+            "name": name,
+            "genere": genere,
+            "primo_firmatario": i == 0
+        })
+
     metadata['proponents'] = proponents
 
     # 2. Body / Articles extraction
